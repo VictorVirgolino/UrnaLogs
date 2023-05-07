@@ -1,0 +1,15 @@
+
+networks:
+  eleicoes:
+    name: "eleicoes"
+services:
+  
+  eleicoes:
+    image: postgres:13
+    ports:
+      - 5434:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: eleicoes_db
+      POSTGRES_DB: eleicoes_db
+  
