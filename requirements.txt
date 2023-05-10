@@ -1,0 +1,9 @@
+selenium
+beautifulsoup4
+peewee
+py7zr
+pandas
+numpy
+seaborn
+matplotlib
+ipywidgets

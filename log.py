@@ -19,11 +19,11 @@ respectivamente, nos dias 02/10/2022 e 30/10/2022, e realizar uma análise explo
 """
 
 turno = 'https://resultados.tse.jus.br/oficial/app/index.html#/eleicao;e=e544/dados-de-urna/boletim-de-urna' #1 Turno
-# turno = 'https://resultados.tse.jus.br/oficial/app/index.html#/eleicao;e=e545;uf=pb;ufbu=pb;mubu=19011;zn=0074;se=0100/dados-de-urna/log-da-urna'
+# turno = 'https://resultados.tse.jus.br/oficial/app/index.html#/eleicao;e=e545/dados-de-urna/boletim-de-urna'#2 Turno
 
 absolute_path =  os.path.dirname(__file__)
-path = os.path.join(absolute_path, "WorkStation/temp")
-path_to = os.path.join(absolute_path, "WorkStation")
+path = os.path.join(absolute_path, "WorkStation\\temp")
+path_to = os.path.join(absolute_path, "WorkStation\\")
 
 path_download = path.replace('/', '\\').replace('\'', '\\')
 chrome_options = webdriver.ChromeOptions()
@@ -34,28 +34,40 @@ chrome_options.add_argument("start-maximized")
 chrome_options.add_argument('--ignore-certificate-errors-spki-list')
 chrome_options.add_argument('--ignore-ssl-errors')
 
-
+if(not os.path.exists(path_to)):
+    os.mkdir(path_to)
 os.chdir(path_to)
 
-start_estado = 18;#13
+start_estado = 5;#13
 start_municipio = 1;#39
 start_zona = 2;#3
 start_secao = 2;
 
 cont = True;
-a = 0;
 last= ''
 flag = True
-limite_downloads = 500
+limite_downloads = 400
 contador = 1
+error = False
 
 #dataframe dos municipios
 colunas_zonas = ["Zona", "Município", "Estado"]
 zonas = pd.DataFrame(columns=colunas_zonas)
 
+# if(os.path.exists(path_to)):
+#             shutil.rmtree(path_to)
+#             os.mkdir(path_to)
+#             error = False
+
 while(True):
 
     try:
+
+        a=0
+
+        if(os.path.exists(path)):
+            shutil.rmtree(path)
+            error = False
        
         nav = webdriver.Chrome(options=chrome_options)
 
@@ -65,13 +77,13 @@ while(True):
         sleep(1)
         nav.find_element(By.XPATH, "//div[@title='Alterar localidade']").click();
         sleep(1)
-        WebDriverWait(nav, 8).until(
+        WebDriverWait(nav, 60).until(
             EC.presence_of_element_located((By.XPATH, "//input[@formcontrolname='uf']"))
             
         )
         # Selecionar estado
         nav.find_element(By.XPATH, "//input[@formcontrolname='uf']").click()
-        WebDriverWait(nav, 8).until(
+        WebDriverWait(nav, 60).until(
             EC.presence_of_element_located((By.XPATH, "//div[@role='listbox']//mat-option"))
         )
         num_estados = nav.find_elements(By.XPATH, "//div[@role='listbox']//mat-option")
@@ -151,17 +163,21 @@ while(True):
                     #Seleciona a Seção
                     
                     for secao in range(num,len(num_secoes)+1):
-                        exist = os.path.isdir(path)
-                        while(exist):
-                            print("temp não enviado...")
-                            sleep(5)
-                            if(a==3):
-                                dest = path_to+"\\"+nome_zona+"\\"+last
-                                print(dest)
-                                shutil.move(path,dest)
-                                a = 0
-                            exist = os.path.isdir(path)                        
-                            a+=1
+                        
+                        # exist = os.path.isdir(path) 
+                        # while(exist):
+                        #     print("temp não enviado...")
+                        #     sleep(5)
+                        #     if(a==3):
+                        #         dest = path_to+"\\"+nome_zona+"\\"+last
+                        #         print(dest)
+                        #         if(os.path.exists(dest)):
+                        #             shutil.rmtree(dest)
+                        #         shutil.move(path,dest)
+                        #         a = 0
+                        #     exist = os.path.isdir(path) and any(fname.endswith('.zip') for fname in os.listdir(dest))                    
+                        #     a+=1
+                        
 
                         os.mkdir('temp')
                         sleep(1)
@@ -177,12 +193,42 @@ while(True):
                         nav.find_element(By.XPATH, "//li[@class='mr-5 li-active-2 ng-star-inserted']//a").click()
                         nav.find_element(By.XPATH, "//mat-form-field[2]").click()
                         dest = path_to+"\\"+nome_zona+"\\"+nome_secao
-                        sleep(3)
-                        shutil.move(path,dest)
                         last = nome_secao
+                        sleep(2)
+
+                        #checar se a pasta temp existe e se o arquivo zip está nela
+                        if(os.path.isdir(path) and any(fname.endswith('.zip') for fname in os.listdir(path))):
+                            shutil.move(path,dest)
+
+                            while(os.path.isdir(path) or not(os.path.isdir(dest) and any(fname.endswith('.zip') for fname in os.listdir(dest)))):
+                                if(a == 5):
+                                    print('last: ', last)
+                                    raise Exception('Arquivo não foi movido corretamente! Reiniciando....')
+                                sleep(2)
+                                print('Arquivo ainda não foi movido... ', a)
+                                a += 1
+                            
+                            
+
+
+                            
+    
+                        
+                        else:
+                            print('last: ', last)
+                            raise Exception('Arquivo zip não foi baixado! Reiniciando....')
+
+                        a = 0
                         sleep(1)
                         
 
+
+                        # checar se a pasta foi movida e se o arquivo se encontra dentro dela
+                        # if(not any(fname.endswith('.zip') for fname in os.listdir(path))):
+                        #     print('last: ', last)
+                        #     raise Exception('Limite de downloads alcançado! Reiniciando....')
+
+                        # sleep(1)
                     
                         print(path_to+"\\"+nome_zona+"\\"+nome_secao + ' enviado com sucesso')
 
@@ -215,17 +261,26 @@ while(True):
             
 
     except Exception as e:
+        print(e)
+        contador = 0
         cont = True
-        contador = 1
         start_estado = estado
         start_municipio = municipio
         start_zona = zona
-        start_secao = secao + 1
+        last = nome_secao
+        dest = path_to+"\\"+nome_zona+"\\"+last
+        start_secao = secao
+
+        if(os.path.exists(dest)):
+            shutil.rmtree(dest)
+
         nav.close()
         nav.quit()
 
 
-# finally:
-#     # nav.quit()
+    # finally:
+    #     print("ok")
+    #     nav.close()
+    #     nav.quit()
 
 
