@@ -1,10 +1,14 @@
-# UrnaLogs
+<a id="sobre"></a>
+
+# Sobre
 ## O UrnaLogs é uma ferramenta desenvolvida em Python que oferece uma solução completa para extrair, estruturar e visualizar os dados contidos nos logs das urnas eletrônicas disponibilizados pelo TSE. 
+
+<a id="tabela-de-conteudo"></a>
 
 ### Tabela de conteúdos
 ### ===================
 <!--ts-->
-* [Sobre](#Sobre)
+* [Sobre](#sobre)
 * [Tabela de Conteudo](#tabela-de-conteudo)
 * [Pre Requisitos](#pre-requisitos)
 * [Instalação](#instalacao)
@@ -16,6 +20,7 @@
 * [Exemplos](#exemplos)
 <!--te-->
 
+<a id="pre-requisitos"></a>
 
 ### Pré-requisitos
 Antes de começar, você vai precisar ter instalado em sua máquina as seguintes ferramentas:
@@ -28,6 +33,9 @@ Antes de começar, você vai precisar ter instalado em sua máquina as seguintes
 * [Docker](https://docs.docker.com/desktop/install/windows-install/)
 
 Para facilitar, o projeto já vem com um arquivo docker-compose.yml com a configuração da instalação e configuração de uma imagem de um banco Postgres utilizando a ferramenta Docker, o link  possui um passo a passo da ferramenta para plataformas windows.
+
+<a id="instalacao"></a>
+
 ### Instalação
 ```bash
 # Clone este repositório
@@ -80,12 +88,13 @@ Passo 6 - Extrair do zip o arquivo chromedriver.exe e copiar para a pasta do pyt
 
 Sempre que seu navegador for atualizado é necessário baixar a versão compátivel e substituir o chromedriver.exe na pasta do python.
 
-
-#### Como saber a versão do Chrome
-
+<a id="como-usar"></a>
 
 ### Como usar
 O UrnaLogs é divido em 4 módulos que podem ser usados separadamente ou em conjunto para extrair, estruturar e visualizar os dados das urnas eletrônicas.
+
+<a id="web-scraping"></a>
+
 #### Módulo de Web Scraping
 O módulo de Web Scraping é responsável por extrair os arquivos comprimidos contendo os logs das urnas de uma eleição e os salvando de hieraquica na pasta no computador.
 Para usa-lo, precisa primeiramente selecionar qual eleição se está interresado, selecionar dados da urna da eleição, e copiar a url para substituir o valor da variável turno do script log.py.
@@ -111,6 +120,7 @@ O resultado será os arquivos comprimidos sendo salvos na pasta workstation na h
 
 ![diagrama arquivos](/imagens/passo%20a%20passo/diagrama%20de%20arquivos.png "diagrama de arquivos")
 
+<a id="etl"></a>
 
 #### Módulo de ETL
 Em seguida o módulo de ETL ira ler e inserir os logs no módulo de presistência.
@@ -135,12 +145,16 @@ Tendo feito isso, basta rodar o script read_file.py
 python read_file.py
 ```
 
+<a id="persistencia"></a>
+
 #### Módulo de Persistência
 O módulo de persistência corresponde ao banco de dados selecionado para reter as informações dos logs das urnas.
 É possivel ter acesso aos dados diretamente no banco de dados através do uso de um SGBD.
 No caso da opção padrão do uso do banco Postgres, recomendo o uso da ferramenta DBeaver pois ele oferece uma forma fácil e compelta de navegar pelos dados e fazer consultas.
 
 [DBeaver](https://dbeaver.io/)
+
+<a id="dashboard"></a>
 
 #### Módulo de Dashboard
 O módulo de dashboard permite uma alternativa fácile interativa de explorar os dados contidos no módulo de persistência,
@@ -149,6 +163,7 @@ o notebook python dashboard_secao permite gerar gráficos histogramas,dispersão
 Para utilizar pasta abrir o notebook "dashboard_secao.ipynb" utilizando o vscode ou seu editor de preferência.
 Ele utiliza o ORM Peewee para realizar as consultas e plotar os graficos.
 
+<a id="exemplos"></a>
 
 ### Exemplos
 Segue alguns exemplos de graficos que podem ser gerados com o uso da ferramenta:
